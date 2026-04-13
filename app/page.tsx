@@ -116,7 +116,7 @@ export default function Home() {
 
   if (showResult) {
     return (
-      <div className="min-h-screen bg-[#0f1117] flex flex-col max-h-screen overflow-hidden">
+      <div className="h-dvh bg-[#0f1117] flex flex-col overflow-y-scroll">
         <Sidebar
           open={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
@@ -127,7 +127,7 @@ export default function Home() {
         />
 
         <InstallPrompt />
-      <div className="flex-1 overflow-hidden p-4 md:p-6 flex flex-col">
+      <div className="min-h-0 flex-1 overflow-hidden p-4 md:p-6 flex flex-col">
           <header className="mb-4 flex items-center justify-between shrink-0">
             <div className="flex items-center gap-3">
               <button
@@ -178,7 +178,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-dvh bg-[#0f1117] flex flex-col items-center justify-start overflow-y-auto px-4 py-4 md:py-6">
+    <div className="h-dvh bg-[#0f1117] flex flex-col items-center justify-start overflow-y-scroll px-4 py-4 md:py-6">
       <InstallPrompt />
       <Sidebar
         open={sidebarOpen}

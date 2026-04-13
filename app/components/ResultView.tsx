@@ -149,7 +149,7 @@ export function ResultView({ results, isStreaming, totalSteps, onReset }: Result
       </div>
 
       {/* 결과 목록 */}
-      <div className="flex-1 overflow-y-auto space-y-3 pr-1">
+      <div className="flex-1 overflow-y-scroll space-y-3 pr-1">
         {phaseResults.length === 0 ? (
           <div className="text-center text-slate-600 py-12 text-sm">
             {isStreaming

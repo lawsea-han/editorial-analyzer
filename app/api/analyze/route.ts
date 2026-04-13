@@ -113,13 +113,13 @@ export async function POST(req: Request) {
 
     const systemPrompt = `당신은 사설(editorial)을 깊이 분석하는 전문 분석가입니다.
 각 단계를 명확히 구분하여 분석하고, 반드시 한국어로 출력하세요.
-각 단계는 2~4문장으로 핵심만 간결하게 작성하세요.
+각 단계는 1~2문장으로 핵심만 간결하게 작성하세요.
 반드시 아래 형식을 정확히 따르세요:
 
 [단계N] 단계제목
 분석내용
 
-형식을 절대 바꾸지 마세요. 요청된 ${totalSteps}개의 단계만 분석하세요.`;
+형식을 절대 바꾸지 마세요. 요청된 ${totalSteps}개의 단계를 하나도 빠뜨리지 말고 모두 분석하세요.`;
 
     // 3. SDK 동적 import (모듈 초기화 시 로드 방지)
     let Anthropic: typeof import("@anthropic-ai/sdk").default;
