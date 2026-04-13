@@ -178,7 +178,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0f1117] flex flex-col items-center justify-center p-4 md:p-8">
+    <div className="min-h-dvh bg-[#0f1117] flex flex-col items-center justify-start overflow-y-auto px-4 py-4 md:py-6">
       <InstallPrompt />
       <Sidebar
         open={sidebarOpen}
@@ -191,16 +191,16 @@ export default function Home() {
 
       <div className="w-full max-w-2xl">
         {/* 헤더 */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-5 md:mb-6">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-medium mb-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-medium mb-2">
               <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
               Claude AI 기반 분석
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-slate-100">
+            <h1 className="text-2xl md:text-3xl font-bold text-slate-100">
               사설 분석기
             </h1>
-            <p className="text-slate-500 text-sm mt-1">
+            <p className="text-slate-500 text-sm mt-0.5">
               AI가 사설을 최대 30단계로 깊이 분석합니다
             </p>
           </div>
@@ -227,7 +227,7 @@ export default function Home() {
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder="분석할 사설 텍스트를 붙여넣어 주세요..."
-            className="w-full h-52 md:h-64 p-4 bg-transparent text-slate-300 placeholder-slate-600 text-sm resize-none outline-none leading-relaxed"
+            className="w-full h-40 md:h-48 lg:h-56 p-4 bg-transparent text-slate-300 placeholder-slate-600 text-sm resize-none outline-none leading-relaxed"
           />
           <div className="flex items-center justify-between px-4 py-3 border-t border-white/10">
             <span className="text-xs text-slate-600">

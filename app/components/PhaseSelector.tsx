@@ -20,7 +20,7 @@ export function PhaseSelector({ selected, onChange }: PhaseSelectorProps) {
   const allSelected = selected.length === PHASE_INFO.length;
 
   return (
-    <div className="mb-4">
+    <div className="mb-3">
       <div className="flex items-center justify-between mb-2">
         <span className="text-xs text-slate-500">분석할 PHASE 선택</span>
         <button
@@ -42,7 +42,7 @@ export function PhaseSelector({ selected, onChange }: PhaseSelectorProps) {
             <button
               key={p.phase}
               onClick={() => toggle(p.phase)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
+              className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all border ${
                 isOn
                   ? `${c.badge} border-current`
                   : "bg-white/5 text-slate-500 border-white/10 hover:bg-white/10"
