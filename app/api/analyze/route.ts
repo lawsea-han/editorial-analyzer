@@ -67,7 +67,6 @@ const ALL_PHASES = [
 function buildPrompt(text: string, selectedPhases: number[]): string {
   const phases = ALL_PHASES.filter((p) => selectedPhases.includes(p.phase));
   const totalSteps = phases.reduce((acc, p) => acc + p.steps.length, 0);
-
   const phaseText = phases
     .map(
       (p) =>
@@ -75,28 +74,44 @@ function buildPrompt(text: string, selectedPhases: number[]): string {
         p.steps.map((s) => `[단계${s.n}] ${s.label}`).join("\n")
     )
     .join("\n\n");
-
   return `다음 사설을 ${totalSteps}단계로 분석해주세요:\n\n${phaseText}\n\n---\n사설 원문:\n${text}`;
 }
 
 export async function POST(req: Request) {
-  const { text, selectedPhases } = await req.json();
+  try {
+    // 1. env 체크
+    if (!process.env.ANTHROPIC_API_KEY) {
+      console.error("[analyze] ANTHROPIC_API_KEY 환경변수 누락");
+      return new Response("서버 설정 오류: API 키가 설정되지 않았습니다.", { status: 500 });
+    }
 
-  if (!text || text.trim().length === 0) {
-    return new Response("사설 텍스트를 입력해주세요.", { status: 400 });
-  }
+    // 2. 요청 파싱
+    let text: string;
+    let selectedPhases: number[];
+    try {
+      const body = await req.json();
+      text = body.text;
+      selectedPhases = body.selectedPhases;
+    } catch (e) {
+      console.error("[analyze] 요청 파싱 실패:", e);
+      return new Response("잘못된 요청 형식입니다.", { status: 400 });
+    }
 
-  const phases: number[] =
-    Array.isArray(selectedPhases) && selectedPhases.length > 0
-      ? selectedPhases
-      : [1, 2, 3, 4, 5];
+    if (!text || text.trim().length === 0) {
+      return new Response("사설 텍스트를 입력해주세요.", { status: 400 });
+    }
 
-  const totalSteps = ALL_PHASES.filter((p) => phases.includes(p.phase)).reduce(
-    (acc, p) => acc + p.steps.length,
-    0
-  );
+    const phases: number[] =
+      Array.isArray(selectedPhases) && selectedPhases.length > 0
+        ? selectedPhases
+        : [1, 2, 3, 4, 5];
 
-  const systemPrompt = `당신은 사설(editorial)을 깊이 분석하는 전문 분석가입니다.
+    const totalSteps = ALL_PHASES.filter((p) => phases.includes(p.phase)).reduce(
+      (acc, p) => acc + p.steps.length,
+      0
+    );
+
+    const systemPrompt = `당신은 사설(editorial)을 깊이 분석하는 전문 분석가입니다.
 각 단계를 명확히 구분하여 분석하고, 반드시 한국어로 출력하세요.
 각 단계는 2~4문장으로 핵심만 간결하게 작성하세요.
 반드시 아래 형식을 정확히 따르세요:
@@ -106,36 +121,55 @@ export async function POST(req: Request) {
 
 형식을 절대 바꾸지 마세요. 요청된 ${totalSteps}개의 단계만 분석하세요.`;
 
-  // SDK를 요청 시점에 동적 import → 모듈 초기화 시 로드 방지
-  const { default: Anthropic } = await import("@anthropic-ai/sdk");
-  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+    // 3. SDK 동적 import (모듈 초기화 시 로드 방지)
+    let Anthropic: typeof import("@anthropic-ai/sdk").default;
+    try {
+      const mod = await import("@anthropic-ai/sdk");
+      Anthropic = mod.default;
+    } catch (e) {
+      console.error("[analyze] Anthropic SDK import 실패:", e);
+      return new Response("AI 모듈 로드에 실패했습니다.", { status: 500 });
+    }
 
-  const stream = await client.messages.stream({
-    model: "claude-sonnet-4-6",
-    max_tokens: 8192,
-    system: systemPrompt,
-    messages: [{ role: "user", content: buildPrompt(text, phases) }],
-  });
+    // 4. 스트리밍
+    const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+    const stream = await client.messages.stream({
+      model: "claude-sonnet-4-6",
+      max_tokens: 8192,
+      system: systemPrompt,
+      messages: [{ role: "user", content: buildPrompt(text, phases) }],
+    });
 
-  const encoder = new TextEncoder();
-  const readableStream = new ReadableStream({
-    async start(controller) {
-      for await (const chunk of stream) {
-        if (
-          chunk.type === "content_block_delta" &&
-          chunk.delta.type === "text_delta"
-        ) {
-          controller.enqueue(encoder.encode(chunk.delta.text));
+    const encoder = new TextEncoder();
+    const readableStream = new ReadableStream({
+      async start(controller) {
+        try {
+          for await (const chunk of stream) {
+            if (
+              chunk.type === "content_block_delta" &&
+              chunk.delta.type === "text_delta"
+            ) {
+              controller.enqueue(encoder.encode(chunk.delta.text));
+            }
+          }
+        } catch (e) {
+          console.error("[analyze] 스트리밍 중 오류:", e);
+          controller.error(e);
+        } finally {
+          controller.close();
         }
-      }
-      controller.close();
-    },
-  });
+      },
+    });
 
-  return new Response(readableStream, {
-    headers: {
-      "Content-Type": "text/plain; charset=utf-8",
-      "Transfer-Encoding": "chunked",
-    },
-  });
+    return new Response(readableStream, {
+      headers: {
+        "Content-Type": "text/plain; charset=utf-8",
+        "Transfer-Encoding": "chunked",
+      },
+    });
+  } catch (err) {
+    console.error("[analyze] 예상치 못한 오류:", err);
+    const msg = err instanceof Error ? err.message : "알 수 없는 오류";
+    return new Response(`분석 중 오류가 발생했습니다: ${msg}`, { status: 500 });
+  }
 }
