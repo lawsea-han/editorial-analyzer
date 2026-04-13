@@ -1,8 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 
-const client = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
+const getClient = () =>
+  new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 const ALL_PHASES = [
   {
@@ -109,6 +108,7 @@ export async function POST(req: Request) {
 
 형식을 절대 바꾸지 마세요. 요청된 ${totalSteps}개의 단계만 분석하세요.`;
 
+  const client = getClient();
   const stream = await client.messages.stream({
     model: "claude-sonnet-4-6",
     max_tokens: 8192,
