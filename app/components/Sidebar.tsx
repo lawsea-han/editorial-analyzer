@@ -1,7 +1,6 @@
 "use client";
 
 import { HistoryItem } from "../hooks/useHistory";
-import { PHASE_INFO } from "./StepCard";
 
 interface SidebarProps {
   open: boolean;
@@ -72,17 +71,14 @@ export function Sidebar({ open, onClose, history, onLoad, onDelete, onClear }: S
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-slate-600">{item.date}</span>
                     <div className="flex gap-0.5">
-                      {item.selectedPhases.map((ph) => {
-                        const info = PHASE_INFO.find((p) => p.phase === ph);
-                        return (
-                          <span
-                            key={ph}
-                            className="text-xs px-1 rounded bg-white/10 text-slate-500"
-                          >
-                            P{ph}
-                          </span>
-                        );
-                      })}
+                      {item.selectedPhases.map((ph) => (
+                        <span
+                          key={ph}
+                          className="text-xs px-1 rounded bg-white/10 text-slate-500"
+                        >
+                          P{ph}
+                        </span>
+                      ))}
                     </div>
                   </div>
                   <p className="text-xs text-slate-600 mt-1">

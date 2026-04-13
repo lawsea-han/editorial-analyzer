@@ -71,7 +71,6 @@ export function ResultView({ results, isStreaming, totalSteps, onReset }: Result
     const text = `📰 사설 분석 결과 (${completedCount}단계)\n\n${preview}\n\n─ 사설 분석기로 분석`;
 
     // 카카오톡 공유 — SDK 없이 카카오 링크 웹 URL 사용
-    const kakaoUrl = `https://sharer.kakao.com/talk/friends/picker/link?app_key=KAKAO_APP_KEY&validation_action=default&validation_params={}`;
     // 카카오 SDK가 없으므로 navigator.share 또는 클립보드 복사로 폴백
     if (navigator.share) {
       navigator.share({

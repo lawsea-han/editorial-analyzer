@@ -124,11 +124,11 @@ export function InstallPrompt() {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center shrink-0 text-xs">2</span>
-                  <span><strong className="text-slate-300">"홈 화면에 추가"</strong> 선택</span>
+                  <span><strong className="text-slate-300">&quot;홈 화면에 추가&quot;</strong> 선택</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center shrink-0 text-xs">3</span>
-                  <span>오른쪽 상단 <strong className="text-slate-300">"추가"</strong> 탭</span>
+                  <span>오른쪽 상단 <strong className="text-slate-300">&quot;추가&quot;</strong> 탭</span>
                 </div>
               </div>
             )}

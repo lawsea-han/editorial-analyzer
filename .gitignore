@@ -43,3 +43,5 @@ next-env.d.ts
 
 # PWA 아이콘 생성 스크립트 의존성
 node_modules/canvas
+
+.vercel
