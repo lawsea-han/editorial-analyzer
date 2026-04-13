@@ -61,23 +61,27 @@ export default function Home() {
     bufferRef.current = "";
 
     try {
-      const res = await fetch("/api/analyze", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text, selectedPhases }),
-      });
+      for (const phase of selectedPhases) {
+        if (bufferRef.current.length > 0) bufferRef.current += "\n\n";
 
-      if (!res.ok) throw new Error(await res.text());
+        const res = await fetch("/api/analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text, selectedPhases: [phase] }),
+        });
 
-      const reader = res.body!.getReader();
-      const decoder = new TextDecoder();
+        if (!res.ok) throw new Error(await res.text());
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        bufferRef.current += decoder.decode(value, { stream: true });
-        const parsed = parseBuffer(bufferRef.current);
-        if (parsed.length > 0) setResults(parsed);
+        const reader = res.body!.getReader();
+        const decoder = new TextDecoder();
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          bufferRef.current += decoder.decode(value, { stream: true });
+          const parsed = parseBuffer(bufferRef.current);
+          if (parsed.length > 0) setResults(parsed);
+        }
       }
 
       const finalParsed = parseBuffer(bufferRef.current);
