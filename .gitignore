@@ -19,6 +19,9 @@
 
 # production
 /build
+/output/
+/reading_research_library/
+/youtube-*-thumb.jpg
 
 # misc
 .DS_Store
